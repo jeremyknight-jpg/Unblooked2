@@ -1,61 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unblocked Hub</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { background: #0d0d0d; color: #ffffff; }
-    header { width: 100%; padding: 20px 30px; background: #111; position: sticky; top: 0; z-index: 1000;
-             display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-    .logo { font-size: 1.5rem; font-weight: bold; color: #00d0ff; }
-    .search { width: 300px; }
-    .search input { width: 100%; padding: 10px; border-radius: 20px; border: none; outline: none; background: #222; color: #fff; }
-    section { padding: 40px; }
-    h2 { margin-bottom: 15px; font-size: 1.8rem; border-left: 4px solid #00d0ff; padding-left: 10px; }
-    .scroll-list { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 10px; }
-    .item { min-width: 200px; height: 120px; background: #1a1a1a; border-radius: 12px; flex-shrink: 0;
-            display: flex; justify-content: center; align-items: center; font-size: 1.2rem;
-            border: 1px solid #222; transition: 0.2s ease; }
-    .item:hover { background: #222; transform: scale(1.05); cursor: pointer; }
-    footer { text-align: center; padding: 30px; background: #111; border-top: 1px solid #222; margin-top: 40px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Apps</title>
+
+<style>
+/* ===== Global ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: #fff;
+  overflow: hidden; /* locked until password */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== LOCK SCREEN ===== */
+#lockScreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+}
+
+#lockImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Invisible click area */
+#progressHitbox {
+  position: absolute;
+  top: 52%;
+  left: 55%;
+  width: 10%;
+  height: 15%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* ===== REAL SITE (HIDDEN INITIALLY) ===== */
+#realSite {
+  display: none;
+  background-color: #121212;
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* ===== Header ===== */
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: #1e1e1e;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+header nav a {
+  color: white;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+header nav a:hover {
+  text-decoration: underline;
+}
+
+button {
+  padding: 10px 20px;
+  background: #333;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===== Sections ===== */
+.section {
+  padding: 30px 20px;
+  border-bottom: 1px solid #333;
+}
+
+/* ===== Games Carousel ===== */
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+  padding: 15px 0;
+}
+
+.gameButton {
+  min-width: 200px;
+  padding: 15px;
+  background: #1e1e1e;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ===== Game Viewer Overlay ===== */
+#gameViewerBackdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 2500;
+  align-items: center;
+  justify-content: center;
+}
+
+#gameViewer {
+  width: 100%;
+  height: 100%;
+  max-width: 1400px;
+  max-height: 90vh;
+  background: black;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+#gameViewer iframe {
+  width: 100%;
+  height: 100%;
+}
+
+#gameViewerClose {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  z-index: 3000;
+}
+</style>
 </head>
+
 <body>
-  <header>
-    <div class="logo">Unblocked Hub</div>
-    <div class="search"><input type="text" placeholder="Search games, movies, shows, music..." /></div>
-  </header>
 
-  <section>
-    <h2>Games</h2>
-    <div class="scroll-list">
-      <div class="item">Game 1</div><div class="item">Game 2</div><div class="item">Game 3</div><div class="item">Game 4</div><div class="item">Game 5</div>
-    </div>
-  </section>
+<!-- =======================
+       LOCK SCREEN
+======================= -->
+<div id="lockScreen">
+  <img id="lockImage" src="YOUR_IMAGE.png">
+  <button id="progressHitbox" onclick="unlockSite()"></button>
+</div>
 
-  <section>
-    <h2>Movies</h2>
-    <div class="scroll-list">
-      <div class="item">Movie 1</div><div class="item">Movie 2</div><div class="item">Movie 3</div><div class="item">Movie 4</div><div class="item">Movie 5</div>
-    </div>
-  </section>
+<!-- =======================
+       REAL SITE
+======================= -->
+<div id="realSite">
 
-  <section>
-    <h2>TV Shows</h2>
-    <div class="scroll-list">
-      <div class="item">Show 1</div><div class="item">Show 2</div><div class="item">Show 3</div><div class="item">Show 4</div><div class="item">Show 5</div>
-    </div>
-  </section>
+<header>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#games">Games</a>
+    <a href="#movies">Movies</a>
+    <a href="#tvshows">TV Shows</a>
+    <a href="#youtube">YouTube</a>
+    <a href="#anime">Anime</a>
+    <a href="#music">Music</a>
+    <a href="#unblocked">Unblocked Google</a>
+    <a href="#emulator">Emulator</a>
+    <a href="#forms">Forms</a>
+    <a href="#water">Water</a>
+  </nav>
 
-  <section>
-    <h2>Music</h2>
-    <div class="scroll-list">
-      <div class="item">Song 1</div><div class="item">Song 2</div><div class="item">Song 3</div><div class="item">Song 4</div><div class="item">Song 5</div>
-    </div>
-  </section>
+  <div>
+    <button id="darkModeBtn">Toggle Theme</button>
+    <button onclick="window.location='https://classroom.google.com'">Panic Button</button>
+  </div>
+</header>
 
-  <footer>© 2025 Unblocked Hub — All rights reserved.</footer>
+<!-- Home -->
+<div class="section" id="home">
+  <h1>Unblocked Hub</h1>
+  <h3>Updates every week</h3>
+</div>
+
+<!-- Games -->
+<div class="section" id="games">
+  <h2>Games</h2>
+
+  <div class="carousel">
+    <div class="gameButton" onclick="openGame('https://example.com/game1')">Game 1</div>
+    <div class="gameButton" onclick="openGame('https://example.com/game2')">Game 2</div>
+    <div class="gameButton" onclick="openGame('https://example.com/game3')">Game 3</div>
+  </div>
+</div>
+
+<!-- Emulator -->
+<div class="section" id="emulator">
+  <h2>Emulator</h2>
+  <iframe src="https://taisel.github.io/IodineGBA/" width="100%" height="600"></iframe>
+</div>
+
+<!-- Forms -->
+<div class="section" id="forms">
+  <h2>Forms</h2>
+  <p>Coming soon…</p>
+</div>
+
+</div> <!-- end realSite -->
+
+<!-- =======================
+          GAME VIEWER
+======================= -->
+<div id="gameViewerBackdrop">
+  <div id="gameViewer"></div>
+</div>
+
+<!-- =======================
+          SCRIPTS
+======================= -->
+<script>
+/* Unlock Screen */
+function unlockSite() {
+  const pwd = prompt("Enter password:");
+  if (pwd === "ihatehw385") {
+    document.getElementById("lockScreen").style.display = "none";
+    document.getElementById("realSite").style.display = "block";
+    document.body.style.overflow = "auto";
+    window.scrollTo(0, 0);
+  } else if (pwd !== null) {
+    alert("Incorrect password.");
+  }
+}
+
+/* Game Viewer */
+function openGame(url) {
+  const backdrop = document.getElementById("gameViewerBackdrop");
+  const viewer = document.getElementById("gameViewer");
+
+  backdrop.style.display = "flex";
+  viewer.innerHTML = `
+    <button id="gameViewerClose" onclick="closeGame()">✖</button>
+    <iframe src="${url}"></iframe>
+  `;
+}
+
+function closeGame() {
+  document.getElementById("gameViewerBackdrop").style.display = "none";
+  document.getElementById("gameViewer").innerHTML = "";
+}
+</script>
+
 </body>
 </html>
